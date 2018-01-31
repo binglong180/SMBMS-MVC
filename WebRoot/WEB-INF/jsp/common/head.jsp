@@ -16,7 +16,7 @@
         <h1>超市订单管理系统</h1>
         <div class="publicHeaderR">
             <p><span>下午好！</span><span style="color: #fff21b"> ${userSession.userName }</span> , 欢迎你！</p>
-            <a href="${pageContext.request.contextPath }/jsp/logout.do">退出</a>
+            <a href="${pageContext.request.contextPath }/user/logOut.html">退出</a>
         </div>
     </header>
 <!--时间-->
@@ -32,7 +32,7 @@
              <ul class="list">
                  <li ><a href="${pageContext.request.contextPath }/jsp/bill.do?method=query">订单管理</a></li>
               <li><a href="${pageContext.request.contextPath }/jsp/provider.do?method=query">供应商管理</a></li>
-              <li><a href="${pageContext.request.contextPath }/jsp/user.do?method=query">用户管理</a></li>
+              <li><a href="${pageContext.request.contextPath }/user/userList.html">用户管理</a></li>
               <li><a href="${pageContext.request.contextPath }/jsp/pwdmodify.jsp">密码修改</a></li>
               <li><a href="${pageContext.request.contextPath }/jsp/logout.do">退出系统</a></li>
              </ul>

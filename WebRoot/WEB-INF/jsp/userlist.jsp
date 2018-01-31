@@ -1,16 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@include file="/jsp/common/head.jsp"%>
+<%@include file="/WEB-INF/jsp/common/head.jsp"%>
         <div class="right">
             <div class="location">
                 <strong>你现在所在的位置是:</strong>
                 <span>用户管理页面</span>
             </div>
             <div class="search">
-           		<form method="get" action="${pageContext.request.contextPath }/jsp/user.do">
+           		<form method="get" action="${pageContext.request.contextPath }/user/userList.html">
 					<input name="method" value="query" class="input-text" type="hidden">
 					 <span>用户名：</span>
-					 <input name="queryname" class="input-text"	type="text" value="${queryUserName }">
+					 <input name="queryUserName" class="input-text"	type="text" value="${queryUserName}">
 					 
 					 <span>用户角色：</span>
 					 <select name="queryUserRole">
@@ -92,5 +92,5 @@
     </div>
 </div>
 
-<%@include file="/jsp/common/foot.jsp" %>
-<script type="text/javascript" src="${pageContext.request.contextPath }/js/userlist.js"></script>
+<%@include file="/WEB-INF/jsp/common/foot.jsp" %>
+<script type="text/javascript" src="${pageContext.request.contextPath }/statics/js/userlist.js"></script>

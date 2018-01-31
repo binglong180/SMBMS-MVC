@@ -3,18 +3,22 @@ package cn.smbms.service.role;
 import java.sql.Connection;
 import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
 import cn.smbms.dao.BaseDao;
 import cn.smbms.dao.role.RoleDao;
 import cn.smbms.dao.role.RoleDaoImpl;
 import cn.smbms.pojo.Role;
-
+@Service("roleService")
 public class RoleServiceImpl implements RoleService{
-	
+	@Resource(name="roleDao")
 	private RoleDao roleDao;
 	
-	public RoleServiceImpl(){
+	/*public RoleServiceImpl(){
 		roleDao = new RoleDaoImpl();
-	}
+	}*/
 	
 	@Override
 	public List<Role> getRoleList() {

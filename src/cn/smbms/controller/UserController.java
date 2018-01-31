@@ -1,18 +1,24 @@
 package cn.smbms.controller;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import cn.smbms.pojo.Role;
 import cn.smbms.pojo.User;
+import cn.smbms.service.role.RoleService;
 import cn.smbms.service.user.UserService;
 import cn.smbms.tools.Constants;
+import cn.smbms.tools.PageSupport;
 
 @Controller
 @RequestMapping("/user")
@@ -20,6 +26,8 @@ public class UserController {
 	private Logger logger = Logger.getLogger(UserController.class);
 	@Resource(name = "userService")
 	private UserService userService;
+	@Resource(name = "roleService")
+	private RoleService roleService;
 
 	public UserService getUserService() {
 		return userService;
@@ -41,9 +49,10 @@ public class UserController {
 	public String doLogin(@RequestParam String userCode,
 			@RequestParam String userPassword, HttpSession session,
 			HttpServletRequest request) {
-		logger.debug("dologin++++++++++++++++++++");
+		logger.debug("dologin=================");
 		User login = userService.login(userCode, userPassword);
 		if (login != null) {
+			session.setMaxInactiveInterval(30);
 			session.setAttribute(Constants.USER_SESSION, login);
 			return "redirect:/user/main.html";
 		} else {
@@ -54,9 +63,95 @@ public class UserController {
 
 	@RequestMapping(value = "/main.html")
 	public String main(HttpSession session) {
-		if(session.getAttribute(Constants.USER_SESSION)==null){
+		logger.info("用户状态处理====================");
+		if (session.getAttribute(Constants.USER_SESSION) == null) {
+			if (!session.isNew() == true) {
+				throw new RuntimeException("登录已超时！");
+			}
 			return "redirect:/user/login.html";
 		}
+
 		return "frame";
+	}
+
+	// 局部异常处理
+	@RequestMapping(value = "/exLogin.html", method = RequestMethod.GET)
+	public String exLogin(@RequestParam String userCode,
+			@RequestParam String userPassword) {
+		logger.debug("exLogin=============================");
+		User login = userService.login(userCode, userPassword);
+		if (login == null) {
+			throw new RuntimeException("密码或用户名错误！");
+		}
+		return "redirect:/user/main.html";
+	}
+
+	/*
+	 * @ExceptionHandler(value = (RuntimeException.class)) public String
+	 * handlerException(RuntimeException e, HttpServletRequest request) {
+	 * request.setAttribute("e", e); return "error"; }
+	 */
+	// 注销用户
+	@RequestMapping(value = "logOut.html")
+	public String logOut(HttpSession session) {
+		logger.info("注销用户=====================");
+		session.invalidate();
+		return "redirect:/user/main.html";
+	}
+
+	// 查询用户列表
+	@RequestMapping(value = "userList.html")
+	public String queryUserList(
+			Model model,
+			@RequestParam(value = "queryUserName", required = false) String queryUserName,
+			@RequestParam(value = "queryUserRole", required = false) String queryUserRole,
+			@RequestParam(value = "pageIndex", required = false) String pageIndex
+
+	) {
+		logger.info("queryUserName=========>" + queryUserName);
+		logger.info("queryUserRole=========>" + queryUserRole);
+		logger.info("pageIndex=========>" + pageIndex);
+		int _queryUserRole=0;
+		List<User> userList=null;
+		//设置页面容量
+		int pageSize=Constants.pageSize;
+		//当前页码
+		int currentPageNo=1;
+		if(queryUserName==null){
+			queryUserName="";
+		}
+		if(queryUserRole!=null&&!queryUserRole.equals("")){
+			_queryUserRole=Integer.parseInt(queryUserRole);
+		}
+		if(pageIndex!=null){
+			try{
+				currentPageNo=Integer.valueOf(pageIndex);
+			}catch (Exception e) {
+				return "redirect:/user/syserror.html";
+			}
+		}
+		//总数量
+		int totalCount=userService.getUserCount(queryUserName, _queryUserRole);
+		//总页数
+		PageSupport pages=new PageSupport();
+		pages.setCurrentPageNo(currentPageNo);
+		pages.setPageSize(pageSize);
+		pages.setTotalCount(totalCount);
+		int totalPageCount=pages.getTotalPageCount();
+		if(currentPageNo<1){
+			currentPageNo=1;
+		}else if(currentPageNo>totalPageCount){
+			currentPageNo=totalPageCount;
+		}
+		userList=userService.getUserList(queryUserName, _queryUserRole, currentPageNo, pageSize);
+		model.addAttribute("userList",userList);
+		List<Role> roleList=null;
+		roleList=roleService.getRoleList();
+		model.addAttribute("roleList", roleList);
+		model.addAttribute("queryUserName", queryUserName);
+		model.addAttribute("queryUserRole", queryUserRole);
+		model.addAttribute("totalPageCount", totalPageCount);
+		model.addAttribute("currentPageNo", currentPageNo);
+		return "userlist";
 	}
 }
