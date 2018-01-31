@@ -2,12 +2,15 @@ package cn.smbms.pojo;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class User {
 	private Integer id; //id 
 	private String userCode; //用户编码
 	private String userName; //用户名称
 	private String userPassword; //用户密码
 	private Integer gender;  //性别
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date birthday;  //出生日期
 	private String phone;   //电话
 	private String address; //地址

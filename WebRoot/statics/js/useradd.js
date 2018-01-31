@@ -28,7 +28,7 @@ $(function(){
 	birthday.next().html("*");
 	userRole.next().html("*");
 	
-	$.ajax({
+	/*$.ajax({
 		type:"GET",//请求类型
 		url:path+"/jsp/user.do",//请求的url
 		data:{method:"getrolelist"},//请求参数
@@ -49,7 +49,7 @@ $(function(){
 			validateTip(userRole.next(),{"color":"red"},imgNo+" 获取用户角色列表error",false);
 		}
 	});
-	
+	*/
 	
 	
 	/*
@@ -57,7 +57,7 @@ $(function(){
 	 * 失焦\获焦
 	 * jquery的方法传递
 	 */
-	userCode.bind("blur",function(){
+	/*userCode.bind("blur",function(){
 		//ajax后台验证--userCode是否已存在
 		//user.do?method=ucexist&userCode=**
 		$.ajax({
@@ -81,7 +81,7 @@ $(function(){
 	}).bind("focus",function(){
 		//显示友情提示
 		validateTip(userCode.next(),{"color":"#666666"},"* 用户编码是您登录系统的账号",false);
-	}).focus();
+	}).focus();*/
 	
 	userName.bind("focus",function(){
 		validateTip(userName.next(),{"color":"#666666"},"* 用户名长度必须是大于1小于10的字符",false);
@@ -150,9 +150,10 @@ $(function(){
 	});
 	
 	addBtn.bind("click",function(){
-		if(userCode.attr("validateStatus") != "true"){
+		alert(111);
+		/*if(userCode.attr("validateStatus") != "true"){
 			userCode.blur();
-		}else if(userName.attr("validateStatus") != "true"){
+		}else*/ if(userName.attr("validateStatus") != "true"){
 			userName.blur();
 		}else if(userPassword.attr("validateStatus") != "true"){
 			userPassword.blur();
