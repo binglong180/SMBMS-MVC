@@ -9,30 +9,44 @@
 	<div class="providerAdd">
 		<!-- Spring标签表达式 -->
 		<fm:form method="post" modelAttribute="user">
-		用户编码：<fm:input path="userCode" />
+			<fm:errors path="userCode" />
 			<br />
-		用户名称：<fm:input path="userName" />
+		用户编码：
+			<fm:input path="userCode" />
+
+			<br />
+			<fm:errors path="userName" />
+			<br />
+		用户名称：
+			<fm:input path="userName" />
+
+
+			<fm:errors path="userPassword" />
+
 			<br />
 		用户密码:<fm:password path="userPassword" />
 			<br />
+
+			<fm:errors path="birthday" />
 		出生日期：<fm:input path="birthday" Class="Wdate" readonly="readonly"
 				onclick="WdatePicker()" />
+
 			<br />
 		用户地址:<fm:input path="address" />
-		<br /> 用户电话：
+			<br /> 用户电话：
 		<fm:input path="phone" />
-		<br /> 用户角色：
+			<br /> 用户角色：
 		<fm:radiobutton path="userRole" value="1" />
 		系统管理员
 		<fm:radiobutton path="userRole" value="2" />
 		经理
 		<fm:radiobutton path="userRole" value="3" />
 		普通用户
-		<input type="submit" value="保存"/>
+		<input type="submit" value="保存" />
 		</fm:form>
-		
+
 		<!-- jstl 标签表达式 -->
-		<form id="userForm" name="userForm" method="post"
+		<%-- <form id="userForm" name="userForm" method="post"
 			action="${pageContext.request.contextPath }/user/addsave.html">
 			<input type="hidden" name="method" value="add">
 			<!--div的class 为error是验证错误，ok是验证成功-->
@@ -89,7 +103,7 @@
 				<input type="button" name="add" id="add" value="保存"> <input
 					type="button" id="back" name="back" value="返回">
 			</div>
-		</form>
+		</form> --%>
 	</div>
 </div>
 </section>

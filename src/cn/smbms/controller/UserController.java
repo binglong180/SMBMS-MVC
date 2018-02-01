@@ -56,7 +56,7 @@ public class UserController {
 		logger.debug("dologin=================");
 		User login = userService.login(userCode, userPassword);
 		if (login != null) {
-			session.setMaxInactiveInterval(30);
+			//session.setMaxInactiveInterval(30);
 			session.setAttribute(Constants.USER_SESSION, login);
 			return "redirect:/user/main.html";
 		} else {
@@ -164,15 +164,16 @@ public class UserController {
 	@RequestMapping(value = "/add.html", method = RequestMethod.GET)
 	public String userAdd(@ModelAttribute("user") User user) {
 		logger.info("添加用户========================》");
-		return "user/useradd";
+		return "useradd";
 
 	}
 
 	@RequestMapping(value = "/add.html", method = RequestMethod.POST)
 	public String userAddSave(@Valid User user, BindingResult bindingResult,
 			HttpSession session) {
-		if(bindingResult.hasErrors()){
+		if (bindingResult.hasErrors()) {
 			logger.debug("添加有错误格式数据");
+			return "useradd";
 		}
 		user.setCreatedBy(((User) session.getAttribute(Constants.USER_SESSION))
 				.getId());
@@ -182,7 +183,27 @@ public class UserController {
 			return "redirect:/user/userList.html";
 		}
 		logger.info("添加失败");
-		return "user/useradd";
+		return "useradd";
 	}
 
+	@RequestMapping(value = "/usermodify.html", method = RequestMethod.GET)
+	public String getUserId(@RequestParam String uid,Model model) {
+		logger.info("进入修改信息页面======================"+uid);
+		User user = userService.getUserById(uid);
+		model.addAttribute(user);
+		return "usermodify";
+	}
+
+	@RequestMapping(value = "/usermodifysave.html", method = RequestMethod.POST)
+	public String userModifysave(User user, HttpSession session) {
+		logger.info("保存修改信息操作id" + user.getId()+"=========================");
+		user.setModifyBy(((User) session.getAttribute(Constants.USER_SESSION))
+				.getId());
+		user.setModifyDate(new Date());
+		if (userService.modify(user)) {
+			return "redirect:/user/userList.html";
+		}
+		return "usermodify";
+
+	}
 }
