@@ -6,10 +6,12 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -113,42 +115,44 @@ public class UserController {
 		logger.info("queryUserName=========>" + queryUserName);
 		logger.info("queryUserRole=========>" + queryUserRole);
 		logger.info("pageIndex=========>" + pageIndex);
-		int _queryUserRole=0;
-		List<User> userList=null;
-		//设置页面容量
-		int pageSize=Constants.pageSize;
-		//当前页码
-		int currentPageNo=1;
-		if(queryUserName==null){
-			queryUserName="";
+		int _queryUserRole = 0;
+		List<User> userList = null;
+		// 设置页面容量
+		int pageSize = Constants.pageSize;
+		// 当前页码
+		int currentPageNo = 1;
+		if (queryUserName == null) {
+			queryUserName = "";
 		}
-		if(queryUserRole!=null&&!queryUserRole.equals("")){
-			_queryUserRole=Integer.parseInt(queryUserRole);
+		if (queryUserRole != null && !queryUserRole.equals("")) {
+			_queryUserRole = Integer.parseInt(queryUserRole);
 		}
-		if(pageIndex!=null){
-			try{
-				currentPageNo=Integer.valueOf(pageIndex);
-			}catch (Exception e) {
+		if (pageIndex != null) {
+			try {
+				currentPageNo = Integer.valueOf(pageIndex);
+			} catch (Exception e) {
 				return "redirect:/user/syserror.html";
 			}
 		}
-		//总数量
-		int totalCount=userService.getUserCount(queryUserName, _queryUserRole);
-		//总页数
-		PageSupport pages=new PageSupport();
+		// 总数量
+		int totalCount = userService
+				.getUserCount(queryUserName, _queryUserRole);
+		// 总页数
+		PageSupport pages = new PageSupport();
 		pages.setCurrentPageNo(currentPageNo);
 		pages.setPageSize(pageSize);
 		pages.setTotalCount(totalCount);
-		int totalPageCount=pages.getTotalPageCount();
-		if(currentPageNo<1){
-			currentPageNo=1;
-		}else if(currentPageNo>totalPageCount){
-			currentPageNo=totalPageCount;
+		int totalPageCount = pages.getTotalPageCount();
+		if (currentPageNo < 1) {
+			currentPageNo = 1;
+		} else if (currentPageNo > totalPageCount) {
+			currentPageNo = totalPageCount;
 		}
-		userList=userService.getUserList(queryUserName, _queryUserRole, currentPageNo, pageSize);
-		model.addAttribute("userList",userList);
-		List<Role> roleList=null;
-		roleList=roleService.getRoleList();
+		userList = userService.getUserList(queryUserName, _queryUserRole,
+				currentPageNo, pageSize);
+		model.addAttribute("userList", userList);
+		List<Role> roleList = null;
+		roleList = roleService.getRoleList();
 		model.addAttribute("roleList", roleList);
 		model.addAttribute("queryUserName", queryUserName);
 		model.addAttribute("queryUserRole", queryUserRole);
@@ -156,22 +160,29 @@ public class UserController {
 		model.addAttribute("currentPageNo", currentPageNo);
 		return "userlist";
 	}
-	@RequestMapping(value="/useradd.html",method=RequestMethod.GET)
-	public String userAdd(@ModelAttribute("user") User user){
+
+	@RequestMapping(value = "/add.html", method = RequestMethod.GET)
+	public String userAdd(@ModelAttribute("user") User user) {
 		logger.info("添加用户========================》");
-		return "useradd";
-		
+		return "user/useradd";
+
 	}
-	@RequestMapping(value="/addsave.html",method=RequestMethod.POST)
-	public String userAddSave(User user,HttpSession session){
-		user.setCreatedBy(((User)session.getAttribute(Constants.USER_SESSION)).getId());
+
+	@RequestMapping(value = "/add.html", method = RequestMethod.POST)
+	public String userAddSave(@Valid User user, BindingResult bindingResult,
+			HttpSession session) {
+		if(bindingResult.hasErrors()){
+			logger.debug("添加有错误格式数据");
+		}
+		user.setCreatedBy(((User) session.getAttribute(Constants.USER_SESSION))
+				.getId());
 		user.setCreationDate(new Date());
-		if(userService.add(user)){
+		if (userService.add(user)) {
+			logger.info(user.getUserName() + "添加成功");
 			return "redirect:/user/userList.html";
 		}
-		return "useradd";
+		logger.info("添加失败");
+		return "user/useradd";
 	}
-	
-	
-	
+
 }

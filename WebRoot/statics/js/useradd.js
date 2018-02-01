@@ -150,7 +150,6 @@ $(function(){
 	});
 	
 	addBtn.bind("click",function(){
-		alert(111);
 		/*if(userCode.attr("validateStatus") != "true"){
 			userCode.blur();
 		}else*/ if(userName.attr("validateStatus") != "true"){

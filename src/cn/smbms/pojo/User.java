@@ -2,14 +2,23 @@ package cn.smbms.pojo;
 
 import java.util.Date;
 
+import javax.validation.constraints.Past;
+
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class User {
 	private Integer id; //id 
+	@NotEmpty(message="用户编码不能为空")
 	private String userCode; //用户编码
+	@NotEmpty(message="用户名称不能为空")
 	private String userName; //用户名称
+	@NotEmpty(message="密码不能为空")
+	@Length(max=10,min=6,message="用户密码长度为6-10位")
 	private String userPassword; //用户密码
 	private Integer gender;  //性别
+	@Past(message="必须是一个过去的时间")
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date birthday;  //出生日期
 	private String phone;   //电话
