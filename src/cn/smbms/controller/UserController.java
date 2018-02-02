@@ -3,6 +3,7 @@ package cn.smbms.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -21,7 +22,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.mysql.jdbc.StringUtils;
 
 import cn.smbms.pojo.Role;
 import cn.smbms.pojo.User;
@@ -280,12 +286,44 @@ public class UserController {
 
 	// 查看用户信息
 
-	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
-	public String view(@PathVariable String id, Model model) {
+	@RequestMapping(value = "/view", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+	@ResponseBody
+	public Object view(@RequestParam String id, Model model) {
 		logger.info("查看用户信息" + id);
 		User user = userService.getUserById(id);
-		model.addAttribute(user);
-		return "userview";
-
+		String cjson = "";
+		if (id == null || id.isEmpty()) {
+			return "nodata";
+		}
+		try {
+			model.addAttribute(user);
+			cjson = JSON.toJSONString(user);
+			logger.info("cjson===========>" + cjson);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "failed";
+		}
+		return cjson;
 	}
+
+	// 查看是否存在用户UserCode 使用@ResponseBody
+	@RequestMapping(value = "/ucexist.html")
+	@ResponseBody
+	public Object userCodeIsExist(@RequestParam String userCode) {
+		logger.info("查重 userCode============》" + userCode);
+		HashMap<String, String> hashMap = new HashMap<String, String>();
+
+		if (StringUtils.isNullOrEmpty(userCode)) {
+			hashMap.put("userCode", "exist");
+		} else {
+			User user = userService.selectUserCodeExist(userCode);
+			if (user == null) {
+				hashMap.put("userCode", "noexist");
+			} else {
+				hashMap.put("userCode", "exist");
+			}
+		}
+		return JSONArray.toJSONString(hashMap);
+	}
+
 }
