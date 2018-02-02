@@ -103,8 +103,16 @@
 		</div>
 		<div>
 			<input type="hidden" id="errorinfo" value="${uplodaFileError}" /> <label
-				for="a_idPicPath">证件照</label> <input type="file" name="a_idPicPath"
+				for="a_idPicPath">证件照</label> <input type="file" name="attachs"
 				id="a_idPicPath">
+				<font color="red"></font>
+			<!-- 放置提示信息 -->
+			<font color="red"></font>
+		</div>
+		<div>
+			<input type="hidden" id="errorinfo_wp" value="${uplodaWpError}" /> <label
+				for="a_workPicPath">工作证照</label> <input type="file" name="attachs"
+				id="a_workPicPath">
 				<font color="red"></font>
 			<!-- 放置提示信息 -->
 			<font color="red"></font>

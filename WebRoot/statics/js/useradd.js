@@ -22,6 +22,19 @@ $(function() {
 
 });
 
+//多文件上传
+var a_workPicPath = null;
+var errorinfo_wp = null;
+$(function() {
+	a_workPicPath = $("#a_workPicPath");
+	errorinfo_wp = $("#errorinfo");
+	if (errorinfo_wp.val() == null || errorinfo_wp.val() == "") {
+		a_workPicPath.next().html("上传文件不能大于500KB,上传文件格式必须为：jpg，jpeg，png，pneg");
+	} else {
+		a_workPicPath.next().html(errorinfo_wp.val());
+	}
+
+});
 $(function() {
 	userCode = $("#userCode");
 	userName = $("#userName");

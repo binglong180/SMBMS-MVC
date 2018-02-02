@@ -178,13 +178,21 @@ public class UserController {
 	public String userAddSave(
 			User user,
 			HttpSession session,
-			@RequestParam(value = "a_idPicPath", required = false) MultipartFile attach,
+			@RequestParam(value = "attachs", required = false) MultipartFile[] attachs,
 			HttpServletRequest request) {
 		String idPicPath = null;
-		if (!attach.isEmpty()) {
-			String path = session.getServletContext().getRealPath(
-					"statics" + File.separator + "uploadfiles");
-			logger.info("uploadfiles path===================>" + path);
+		String workPicPath = null;
+		String errorInfo = null;
+		String path = session.getServletContext().getRealPath(
+				"statics" + File.separator + "uploadfiles");
+		logger.info("uploadfiles path===================>" + path);
+		for (int i = 0; i < attachs.length; i++) {
+			MultipartFile attach = attachs[i];
+			if (i == 0) {
+				errorInfo = "uplodaFileError";
+			} else if (i == 1) {
+				errorInfo = "uplodaWkError";
+			}
 			String oldFileName = attach.getOriginalFilename();
 			logger.info("OriginalFilename===================>" + oldFileName);
 			String prefix = FilenameUtils.getExtension(oldFileName);
@@ -192,21 +200,26 @@ public class UserController {
 			int filrSize = 500000;
 			logger.info("filrSize size======================" + filrSize);
 			if (attach.getSize() > filrSize) {
-				request.setAttribute("uplodaFileError", "上传文件不得大于500KB");
+				request.setAttribute(errorInfo, "上传文件不得大于500KB");
 				return "useradd";
 			} else if (prefix.equalsIgnoreCase("jpg")
 					|| prefix.equalsIgnoreCase("jpeg")
 					|| prefix.equalsIgnoreCase("png")
 					|| prefix.equalsIgnoreCase("pneg")) {
 				String fileName = System.currentTimeMillis()
-						+ RandomUtils.nextInt(1000000) + "_Personal.jsp";
+						+ RandomUtils.nextInt(1000000) + "";
+				if (i == 0) {
+					fileName += "_Personal.jsp";
+				} else if (i == 1) {
+					fileName += "_Work.jsp";
+				}
 				logger.info("fileName new======================" + fileName);
 				File targetFile = new File(path, fileName);
 				// 判断文件夹是否存在
 				if (!targetFile.exists()) {
 					boolean mkdirs = targetFile.mkdirs();
-					if(!mkdirs){
-						request.setAttribute("uplodaFileError", "上传文件格式不正确");
+					if (!mkdirs) {
+						request.setAttribute(errorInfo, "上传文件格式不正确");
 						return "useradd";
 					}
 				}
@@ -214,18 +227,25 @@ public class UserController {
 				try {
 					attach.transferTo(targetFile);
 				} catch (Exception e) {
-					request.setAttribute("uplodaFileError", "上传文件失败");
+					request.setAttribute(errorInfo, "上传文件失败");
 					e.printStackTrace();
 					return "useradd";
 				}
-				idPicPath = File.separator + fileName;
+				if (i == 0) {
+					idPicPath = path + File.separator + fileName;
+				} else if (i == 1) {
+					workPicPath = path + File.separator + fileName;
+				}
+				logger.info("idPicPath======================" + idPicPath);
+				logger.info("workPicPath======================" + workPicPath);
 			} else {
-				request.setAttribute("uplodaFileError", "上传文件格式不正确");
+				request.setAttribute(errorInfo, "上传文件格式不正确");
 				return "useradd";
 			}
 		}
 
 		user.setIdPicPath(idPicPath);
+		user.setWorkPicPath(workPicPath);
 		user.setCreatedBy(((User) session.getAttribute(Constants.USER_SESSION))
 				.getId());
 		user.setCreationDate(new Date());
