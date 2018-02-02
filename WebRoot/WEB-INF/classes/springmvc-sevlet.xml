@@ -11,7 +11,7 @@
         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 	<context:component-scan base-package="cn.smbms.controller" />
 	<mvc:annotation-driven />
-	
+
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/jsp/" />
@@ -27,6 +27,13 @@
 				<prop key="java.lang.RuntimeException">login</prop>
 			</props>
 		</property>
+	</bean>
+
+	<!-- 使用Spring上传文件 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="5000000"></property>
+		<property name="defaultEncoding" value="UTF-8"></property>
 	</bean>
 </beans>
 

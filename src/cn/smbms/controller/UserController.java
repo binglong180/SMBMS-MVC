@@ -1,5 +1,7 @@
 package cn.smbms.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -8,14 +10,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import cn.smbms.pojo.Role;
 import cn.smbms.pojo.User;
@@ -56,7 +62,7 @@ public class UserController {
 		logger.debug("dologin=================");
 		User login = userService.login(userCode, userPassword);
 		if (login != null) {
-			//session.setMaxInactiveInterval(30);
+			// session.setMaxInactiveInterval(30);
 			session.setAttribute(Constants.USER_SESSION, login);
 			return "redirect:/user/main.html";
 		} else {
@@ -161,20 +167,65 @@ public class UserController {
 		return "userlist";
 	}
 
-	@RequestMapping(value = "/add.html", method = RequestMethod.GET)
+	@RequestMapping(value = "/useradd.html", method = RequestMethod.GET)
 	public String userAdd(@ModelAttribute("user") User user) {
 		logger.info("添加用户========================》");
 		return "useradd";
 
 	}
 
-	@RequestMapping(value = "/add.html", method = RequestMethod.POST)
-	public String userAddSave(@Valid User user, BindingResult bindingResult,
-			HttpSession session) {
-		if (bindingResult.hasErrors()) {
-			logger.debug("添加有错误格式数据");
-			return "useradd";
+	@RequestMapping(value = "/addsave.html", method = RequestMethod.POST)
+	public String userAddSave(
+			User user,
+			HttpSession session,
+			@RequestParam(value = "a_idPicPath", required = false) MultipartFile attach,
+			HttpServletRequest request) {
+		String idPicPath = null;
+		if (!attach.isEmpty()) {
+			String path = session.getServletContext().getRealPath(
+					"statics" + File.separator + "uploadfiles");
+			logger.info("uploadfiles path===================>" + path);
+			String oldFileName = attach.getOriginalFilename();
+			logger.info("OriginalFilename===================>" + oldFileName);
+			String prefix = FilenameUtils.getExtension(oldFileName);
+			logger.info("oldFileName prefix===================>" + prefix);
+			int filrSize = 500000;
+			logger.info("filrSize size======================" + filrSize);
+			if (attach.getSize() > filrSize) {
+				request.setAttribute("uplodaFileError", "上传文件不得大于500KB");
+				return "useradd";
+			} else if (prefix.equalsIgnoreCase("jpg")
+					|| prefix.equalsIgnoreCase("jpeg")
+					|| prefix.equalsIgnoreCase("png")
+					|| prefix.equalsIgnoreCase("pneg")) {
+				String fileName = System.currentTimeMillis()
+						+ RandomUtils.nextInt(1000000) + "_Personal.jsp";
+				logger.info("fileName new======================" + fileName);
+				File targetFile = new File(path, fileName);
+				// 判断文件夹是否存在
+				if (!targetFile.exists()) {
+					boolean mkdirs = targetFile.mkdirs();
+					if(!mkdirs){
+						request.setAttribute("uplodaFileError", "上传文件格式不正确");
+						return "useradd";
+					}
+				}
+				// 保存
+				try {
+					attach.transferTo(targetFile);
+				} catch (Exception e) {
+					request.setAttribute("uplodaFileError", "上传文件失败");
+					e.printStackTrace();
+					return "useradd";
+				}
+				idPicPath = File.separator + fileName;
+			} else {
+				request.setAttribute("uplodaFileError", "上传文件格式不正确");
+				return "useradd";
+			}
 		}
+
+		user.setIdPicPath(idPicPath);
 		user.setCreatedBy(((User) session.getAttribute(Constants.USER_SESSION))
 				.getId());
 		user.setCreationDate(new Date());
@@ -187,16 +238,17 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/usermodify.html", method = RequestMethod.GET)
-	public String getUserId(@RequestParam String uid,Model model) {
-		logger.info("进入修改信息页面======================"+uid);
+	public String getUserId(@RequestParam String uid, Model model) {
+		logger.info("进入修改信息页面======================" + uid);
 		User user = userService.getUserById(uid);
 		model.addAttribute(user);
 		return "usermodify";
 	}
 
+	// 修改用户信息
 	@RequestMapping(value = "/usermodifysave.html", method = RequestMethod.POST)
 	public String userModifysave(User user, HttpSession session) {
-		logger.info("保存修改信息操作id" + user.getId()+"=========================");
+		logger.info("保存修改信息操作id" + user.getId() + "=========================");
 		user.setModifyBy(((User) session.getAttribute(Constants.USER_SESSION))
 				.getId());
 		user.setModifyDate(new Date());
@@ -204,6 +256,16 @@ public class UserController {
 			return "redirect:/user/userList.html";
 		}
 		return "usermodify";
+	}
+
+	// 查看用户信息
+
+	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
+	public String view(@PathVariable String id, Model model) {
+		logger.info("查看用户信息" + id);
+		User user = userService.getUserById(id);
+		model.addAttribute(user);
+		return "userview";
 
 	}
 }

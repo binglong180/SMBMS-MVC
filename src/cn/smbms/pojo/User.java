@@ -28,7 +28,7 @@ public class User {
 	private Date creationDate; //创建时间
 	private Integer modifyBy;     //更新者
 	private Date modifyDate;   //更新时间
-	
+	private String idPicPath;  //图片路径
 	private Integer age;//年龄
 	
 	private String userRoleName;    //用户角色名称
@@ -58,6 +58,14 @@ public class User {
 		this.modifyBy = modifyBy;
 		this.modifyDate = modifyDate;
 		this.userRoleName = userRoleName;
+	}
+
+	public String getIdPicPath() {
+		return idPicPath;
+	}
+
+	public void setIdPicPath(String idPicPath) {
+		this.idPicPath = idPicPath;
 	}
 
 	public String getUserRoleName() {
