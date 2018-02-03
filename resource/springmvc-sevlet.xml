@@ -10,8 +10,9 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 	<context:component-scan base-package="cn.smbms.controller" />
-
-	<mvc:annotation-driven conversion-service="myConversionService">
+	<!-- 自定义格式转换器 conversion-service -->
+	<!--<mvc:annotation-driven conversion-service="myConversionService">  -->
+	<mvc:annotation-driven>
 		<mvc:message-converters>
 			<!-- 配置JSON 中文乱码问题 -->
 			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
@@ -42,7 +43,7 @@
 		</mvc:message-converters>
 	</mvc:annotation-driven>
 	<!-- 自定义转换器 日期格式转换 -->
-	<bean id="myConversionService"
+	<!-- <bean id="myConversionService"
 		class="org.springframework.context.support.ConversionServiceFactoryBean">
 		<property name="converters">
 			<list>
@@ -51,7 +52,7 @@
 				</bean>
 			</list>
 		</property>
-	</bean>
+	</bean> -->
 	<!-- 静态文件的引用 -->
 	<mvc:resources mapping="/statics/**" location="/statics/" />
 	<!-- 全局异常处理 -->

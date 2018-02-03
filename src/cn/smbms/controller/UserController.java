@@ -38,7 +38,7 @@ import cn.smbms.tools.PageSupport;
 
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends BaseController{
 	private Logger logger = Logger.getLogger(UserController.class);
 	@Resource(name = "userService")
 	private UserService userService;
