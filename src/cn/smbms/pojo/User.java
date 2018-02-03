@@ -21,8 +21,6 @@ public class User {
 	private String userPassword; // 用户密码
 	private Integer gender; // 性别
 	@Past(message = "必须是一个过去的时间")
-	
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date birthday; // 出生日期
 	private String phone; // 电话
 	private String address; // 地址
