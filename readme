@@ -6,6 +6,21 @@
 2、JDK 1.7.0.8
 3、Spring-SpringMVC-JDBC
 ========================================================
+SMBMS-MVC1.12							     2018-02-02
+========================================================
+1、多视图解析器   ContentNegotiatingViewResolver
+	多视图：url : path + "/user/view.json",
+	或data : {
+				id : obj.attr("userid"),
+				format:"json"
+			}
+========================================================
+SMBMS-MVC1.11							     2018-02-02
+========================================================
+1、使用配置文件配置好后可以不必使用JSON数据格式传递直接进行对象
+传递  
+@ResponseBody 要填写(存在Bug 待解决) 错误解决在配置文件中
+========================================================
 SMBMS-MVC1.10							     2018-02-02
 ========================================================
 1、使用AJax验证用户是否存在  @ResponseBody JSON 传递 Map
@@ -27,7 +42,8 @@ produces = {"application/json;charset=UTF-8"}
 4、解决 JSON 日期格式问题
 使用注解  @JSONField(format="yyyy-MM-dd")
 使用配置 
-<bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+<bean
+				class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
 				<property name="supportedMediaTypes">
 					<list>
 						<value>text/html;charset=UTF-8</value>
@@ -35,7 +51,7 @@ produces = {"application/json;charset=UTF-8"}
 					</list>
 				</property>
 
-				<property>
+				<property name="features">
 					<list>
 						<!-- 输出Date的日期 转换器 -->
 						<value>WriteDateUseDateFormat</value>

@@ -286,24 +286,18 @@ public class UserController {
 
 	// 查看用户信息
 
-	@RequestMapping(value = "/view", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+	@RequestMapping(value = "/view", method = RequestMethod.GET)
 	@ResponseBody
-	public Object view(@RequestParam String id, Model model) {
+	public User view(@RequestParam String id) {
 		logger.info("查看用户信息" + id);
-		User user = userService.getUserById(id);
-		String cjson = "";
-		if (id == null || id.isEmpty()) {
-			return "nodata";
-		}
+		User user = new User();
 		try {
-			model.addAttribute(user);
-			cjson = JSON.toJSONString(user);
-			logger.info("cjson===========>" + cjson);
+			user = userService.getUserById(id);
+			logger.info("user===========>" + user);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "failed";
 		}
-		return cjson;
+		return user;
 	}
 
 	// 查看是否存在用户UserCode 使用@ResponseBody

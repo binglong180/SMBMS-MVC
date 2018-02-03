@@ -21,7 +21,7 @@ public class User {
 	private String userPassword; // 用户密码
 	private Integer gender; // 性别
 	@Past(message = "必须是一个过去的时间")
-	@JSONField(format="yyyy-MM-dd")
+	
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date birthday; // 出生日期
 	private String phone; // 电话
@@ -36,6 +36,10 @@ public class User {
 	private Integer age;// 年龄
 
 	private String userRoleName; // 用户角色名称
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
 
 	public User() {
 		super();

@@ -51,23 +51,25 @@ $(function() {
 	 */
 	$(".viewUser").on("click", function() {
 		// 将被绑定的元素（a）转换成jquery对象，可以使用jquery方法
-		
+		alert(111);
 		var obj = $(this);
 		/* window.location.href=path+"/user/view/"+ obj.attr("userid"); */
 		$.ajax({
 			type : "GET",
 			url : path + "/user/view",
 			data : {
-				id : obj.attr("userid")
+				id : obj.attr("userid"),
+				format:"json"
 			},
-			dataType : "json",
+			dataType:"json",                             
 			success : function(result) {
+				alert(1111111122);
+				alert(result);
 				if ("failed" == result) {
 					alert("请求超时");
 				} else if ("nodata" == result) {
 					alert("没有数据");
 				} else {
-					
 					$("#v_userCode").val(result.userCode);
 					$("#v_userName").val(result.userName);
 					if (result.gender == 1) {

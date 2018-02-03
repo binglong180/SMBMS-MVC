@@ -10,7 +10,6 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 	<context:component-scan base-package="cn.smbms.controller" />
-	<mvc:annotation-driven />
 
 	<mvc:annotation-driven>
 		<mvc:message-converters>
@@ -32,7 +31,7 @@
 					</list>
 				</property>
 
-				<property>
+				<property name="features">
 					<list>
 						<!-- 输出Date的日期 转换器 -->
 						<value>WriteDateUseDateFormat</value>
@@ -41,12 +40,7 @@
 			</bean>
 		</mvc:message-converters>
 	</mvc:annotation-driven>
-	<!-- 视图Bean的配置 前缀 后缀 -->
-	<bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/WEB-INF/jsp/" />
-		<property name="suffix" value=".jsp" />
-	</bean>
+
 	<!-- 静态文件的引用 -->
 	<mvc:resources mapping="/statics/**" location="/statics/" />
 	<!-- 全局异常处理 -->
@@ -64,6 +58,30 @@
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="maxUploadSize" value="5000000"></property>
 		<property name="defaultEncoding" value="UTF-8"></property>
+	</bean>
+	<!-- 配置多视图解析器：允许同样的内容数据呈现不同view -->
+	<bean
+		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="favorParameter" value="true" />
+		<property name="defaultContentType" value="text/html" />
+		<property name="mediaTypes">
+			<map>
+				<entry key="html" value="text/html;charset=UTF-8" />
+				<entry key="json" value="application/html;charset=UTF-8" />
+				<entry key="xml" value="application/xml;charset=UTF-8" />
+			</map>
+		</property>
+		<property name="viewResolvers">
+			<list>
+				<!-- 视图Bean的配置 前缀 后缀 -->
+				<bean
+					class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+					<property name="prefix" value="/WEB-INF/jsp/" />
+					<property name="suffix" value=".jsp" />
+				</bean>
+			</list>
+		</property>
+
 	</bean>
 </beans>
 
