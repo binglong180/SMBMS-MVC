@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="   
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd   
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd   
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd 
+            http://www.springframework.org/schema/context 
+            http://www.springframework.org/schema/context/spring-context.xsd">
+	<!-- 读取数据库文件 -->
+	<context:property-placeholder location="classpath:database.properties" />
+	<!-- 获取数据源（使用dbcp） -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destory-method="close" scope="singleton">
+		<property name="driverClassName" value="${driver}"></property>
+		<property name="url" value="${url}"></property>
+		<property name="username" value="${user}"></property>
+		<property name="password" value="${password}"></property>
+		<property name="initialSize" value="${initialSize}"></property>
+		<property name="maxActive" value="${maxActive}"></property>
+		<property name="maxIdex" value="${maxIdex}"></property>
+		<property name="minIdex" value="${minIdex}"></property>
+		<property name="maxWait" value="${maxWait}"></property>
+		<property name="removeAbandoned" value="${removeAbandoned}"></property>
+		<property name="removeAbandonedTimeout" value="${removeAbandonedTimeout}"></property>
+		<!-- sql心跳 -->
+		<property name="testWhileIdle" value="true"></property>
+		<property name="testOnBorrow" value="false"></property>
+		<property name="testOnReturn" value="false"></property>
+		<property name="validationQuery" value="select 1"></property>
+		<property name="timeBetweenEvictionRunsMillis" value="60000"></property>
+		<property name="numTestsPerEvictionRun" value="${maxActive}"></property>
+	</bean>
+	<!-- 事务管理 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- AOP 事务处理 -->
+	<aop:aspectj-autoproxy />
+	<aop:config proxy-target-class="true">
+		<aop:pointcut expression="execution(**cn.smbms.service..*(..))"
+			id="transService" />
+		<aop:advisor ponitcut-ref="transService" advice-ref="txAdvice" />
+	</aop:config>
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="smbms*" propagation="REQUIRED"
+				rollback-for="Exception" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- 配置MYBatis 的 SqlSessionFactoryBean -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+	</bean>
+	<!-- MapperpScannerConfigurer -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="cn.smbms.dao"></property>
+	</bean>
+</beans>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

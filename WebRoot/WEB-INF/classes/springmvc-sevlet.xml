@@ -11,7 +11,7 @@
         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 	<context:component-scan base-package="cn.smbms.controller" />
 	<!-- 自定义格式转换器 conversion-service -->
-	<!--<mvc:annotation-driven conversion-service="myConversionService">  -->
+	<!--<mvc:annotation-driven conversion-service="myConversionService"> -->
 	<mvc:annotation-driven>
 		<mvc:message-converters>
 			<!-- 配置JSON 中文乱码问题 -->
@@ -43,16 +43,10 @@
 		</mvc:message-converters>
 	</mvc:annotation-driven>
 	<!-- 自定义转换器 日期格式转换 -->
-	<!-- <bean id="myConversionService"
-		class="org.springframework.context.support.ConversionServiceFactoryBean">
-		<property name="converters">
-			<list>
-				<bean class="cn.smbms.tools.StringToDateConverter">
-					<constructor-arg type="java.lang.String" value="yyyy-MM-dd"></constructor-arg>
-				</bean>
-			</list>
-		</property>
-	</bean> -->
+	<!-- <bean id="myConversionService" class="org.springframework.context.support.ConversionServiceFactoryBean"> 
+		<property name="converters"> <list> <bean class="cn.smbms.tools.StringToDateConverter"> 
+		<constructor-arg type="java.lang.String" value="yyyy-MM-dd"></constructor-arg> 
+		</bean> </list> </property> </bean> -->
 	<!-- 静态文件的引用 -->
 	<mvc:resources mapping="/statics/**" location="/statics/" />
 	<!-- 全局异常处理 -->
@@ -95,6 +89,7 @@
 		</property>
 
 	</bean>
+	
 </beans>
 
 
